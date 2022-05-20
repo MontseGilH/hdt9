@@ -259,7 +259,7 @@ public class Grafo {
 			algFloyd();
 		}
 		if (cost.get(from, to) == cost.INF) {
-			return "No existe entre " + origen + " y " + destino;
+			return "No existe";
 		}
 		String txt = "Distancia: " + cost.get(from, to).toString() + "\n";
 		return txt + ruta(from, to, origen + "->") + destino;
