@@ -16,7 +16,7 @@ public class Files {
      * @return pac lista de pacientes
      * @throws Exception
      */
-    public Grafo pacientes(String archivo) throws Exception{
+    public Grafo ciudades(String archivo) throws Exception{
         Grafo pac =  new Grafo();
         try{
             File file = new File(archivo);
