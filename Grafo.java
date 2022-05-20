@@ -10,13 +10,6 @@ import java.util.HashMap;
 class Matriz {
 	private ArrayList<ArrayList<Float>> valores;
 	private int tam = 0;
-	
-	/**
-	 * Constructor de la matriz
-	 */
-	Matriz(){
-		valores = new ArrayList<ArrayList<Float>>();
-	}
  
 	/**
 	 * Establece un valor
@@ -100,6 +93,13 @@ class Matriz {
 		return maxArr;
 	}
 	
+	/**
+	 * Constructor de la matriz
+	 */
+	Matriz(){
+		valores = new ArrayList<ArrayList<Float>>();
+	}
+
 	/**
 	 * Genera el indice del max
 	 * @return índice
@@ -261,9 +261,9 @@ public class Grafo {
 		int id = cost.min();
 		String centr = id_to_nombre.get(id);
 		if (centr == null) {
-			return "No se ha encontrado el centro";
+			return "No encontrado";
 		}
-		return "Centro: " + centr;
+		return centr;
 	}
 	
 	/**
@@ -326,7 +326,7 @@ public class Grafo {
 	}
 	
 	/**
-	 * Genera un texto con el grafo.
+	 * Pasa el grafo a string
 	 */
 	public String toString() {
 		String txt = "";
@@ -340,7 +340,7 @@ public class Grafo {
 	private boolean modified = false;
 
 	/**
-	 * Indica la matriz de rutas
+	 * Regresa las rutas
 	 * @return matriz
 	 */
 	public Matriz getRutas() {
@@ -348,7 +348,7 @@ public class Grafo {
 	}
 	
 	/**
-	 * Indica la matriz de costo
+	 * Regresa los costos
 	 * @return matriz
 	 */
 	public Matriz getCost() {
