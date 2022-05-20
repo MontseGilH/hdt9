@@ -141,27 +141,6 @@ class Matriz {
 			arr.remove(i);
 		}
 	}
-	
-	/**
-	 * Genera String con la matriz
-	 */
-	@Override
-	public String toString() {
-		String txt = "";
-		for (ArrayList<Float> arr : valores) {
-			txt += "[";
-			for (Float f : arr) {
-				if (f == INF) {
-					txt += "INF,\t";
-				} else {
-					txt += f.toString() + ",\t";
-				}
-			}
-			txt = txt.substring(0, txt.length() - 2);
-			txt += "]\n";
-		}
-		return txt;
-	}
 
     final float INF = Float.POSITIVE_INFINITY;
 	final float nINF = Float.NEGATIVE_INFINITY;
