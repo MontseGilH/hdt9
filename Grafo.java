@@ -3,51 +3,51 @@ import java.util.HashMap;
 /**
  * Ultima modificacion: 19/05/2022
  * 
- * Clase grafo 
+ * Clase Matriz 
  * @file Grafo.java
  */
 
 class Matriz {
-	private ArrayList<ArrayList<Float>> data;
-	private int size = 0;
+	private ArrayList<ArrayList<Float>> valores;
+	private int tam = 0;
 	
 	/**
 	 * Constructor de la matriz
 	 */
 	Matriz(){
-		data = new ArrayList<ArrayList<Float>>();
+		valores = new ArrayList<ArrayList<Float>>();
 	}
-
+ 
 	/**
 	 * Establece un valor
-	 * @param i fila
-	 * @param j columna
-	 * @param e valor
+	 * @param i 
+	 * @param j 
+	 * @param e 
 	 */
 	public void set(int i, int j, float e) {
 		i--;
 		j--;
-		ArrayList<Float> temp = data.get(i);
+		ArrayList<Float> temp = valores.get(i);
 		temp.set(j, e);
-		data.set(i, temp);
+		valores.set(i, temp);
 	}
 	
 	/**
-	 * Obtiene el valor de algún espacio
-	 * @param i fila
-	 * @param j columna
-	 * @return valor
+	 * Obtiene un valor
+	 * @param i 
+	 * @param j 
+	 * @return 
 	 */
 	public Float get(int i, int j) {
 		i--;
 		j--;
-		return data.get(i).get(j);
+		return valores.get(i).get(j);
 	}
 
 	/**
 	 * Constructor de la matriz (zero = false)
-	 * @param size
-	 * @param zero
+	 * @param size tamanio
+	 * @param zero true o false
 	 */
 	Matriz(int size, boolean zero) {
 		this();
@@ -61,35 +61,36 @@ class Matriz {
 					temp.add(INF);
 				}
 			}
-			data.add(temp);
+			valores.add(temp);
 		}
-		this.size = size;
+		this.tam = size;
 	}
 	
 	/**
 	 * Añade una columna y fila a la matriz
+	 * Se mueve hacia arriba
 	 */
-	public void scale_up() {
-		size = size + 1;
-		for (ArrayList<Float> arr : data) {
+	public void up() {
+		tam = tam + 1;
+		for (ArrayList<Float> arr : valores) {
 			arr.add(INF);
 		}
 		ArrayList<Float> temp = new ArrayList<Float>();
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < tam; i++) {
 			temp.add(INF);
 		}
-		data.add(temp);
+		valores.add(temp);
 	}
 	
 	/**
-	 * Genera un array de valores máximos por columna
-	 * @return array
+	 * Genera un array de valores max
+	 * @return array con valores max
 	 */
-	private ArrayList<Float> maxArray() {
+	public ArrayList<Float> max() {
 		ArrayList<Float> maxArr = new ArrayList<Float>();
-		for (int i=0; i<size; i++) {
+		for (int i=0; i<tam; i++) {
 			float max = nINF;
-			for (ArrayList<Float> arr : data) {
+			for (ArrayList<Float> arr : valores) {
 				if (max < arr.get(i)) {
 					max = arr.get(i);
 				}
@@ -100,11 +101,11 @@ class Matriz {
 	}
 	
 	/**
-	 * Genera el índice mínimo de el maxArray
+	 * Genera el indice del max
 	 * @return índice
 	 */
-	public int argmin() {
-		ArrayList<Float> maxArr = maxArray();
+	public int min() {
+		ArrayList<Float> maxArr = max();
 		float min = INF;
 		int id = 0;
 		for (int i=0; i<maxArr.size(); i++) {
@@ -121,23 +122,22 @@ class Matriz {
 	 * @return copia
 	 */
 	public Matriz copy() {
-		Matriz temp = new Matriz(size, false);
-		for (int i=1; i<=size; i++) {
-			for (int j=1; j<=size; j++) {
+		Matriz temp = new Matriz(tam, false);
+		for (int i=1; i<=tam; i++) {
+			for (int j=1; j<=tam; j++) {
 				temp.set(i,  j, get(i, j));
 			}
 		}
 		return temp;
 	}
 	
-
 	/**
 	 * Elimina una fila y columna
-	 * @param i fila y columna
+	 * @param i a eliminar
 	 */
 	public void deleteRowCol(int i) {
-		data.remove(i);
-		for (ArrayList<Float> arr : data) {
+		valores.remove(i);
+		for (ArrayList<Float> arr : valores) {
 			arr.remove(i);
 		}
 	}
@@ -148,7 +148,7 @@ class Matriz {
 	@Override
 	public String toString() {
 		String txt = "";
-		for (ArrayList<Float> arr : data) {
+		for (ArrayList<Float> arr : valores) {
 			txt += "[";
 			for (Float f : arr) {
 				if (f == INF) {
@@ -166,45 +166,28 @@ class Matriz {
     final float INF = Float.POSITIVE_INFINITY;
 	final float nINF = Float.NEGATIVE_INFINITY;
 }
-
-
+/**
+ * Ultima modificacion: 19/05/2022
+ * 
+ * Clase Grafo 
+ * @file Grafo.java
+ */
 public class Grafo {
-
-	
-	private Matriz matrix;
+	private Matriz matr;
 	private HashMap<String, Integer> nombre_to_id = new HashMap<>();
 	private HashMap<Integer, String> id_to_nombre = new HashMap<>();
-	private Matriz cost;
-	private Matriz paths;
-	private int size = 0;
-	private boolean modified = false;
-	
+
 	/**
-	 * Inicializa grafo vacio
+	 * Constructor grafo
 	 */
 	Grafo(){
-		matrix = new Matriz();
+		matr = new Matriz();
 	}
-	
+
 	/**
-	 * Añade un nodo
-	 * @param ciudad
-	 */
-	public void addNode(String nombre) {
-		if (!nombre_to_id.containsKey(nombre)) {
-			size++;
-			nombre_to_id.put(nombre, size);
-			id_to_nombre.put(size, nombre);
-			matrix.scale_up();
-			addEdge(nombre, nombre, 0);
-			modified = true;
-		}
-	}
-	
-	/**
-	 * Añade un arco o arista
-	 * @param origen
-	 * @param destino
+	 * Agrega una arista
+	 * @param from desde donde
+	 * @param to hacia donde
 	 * @param dist distancia
 	 */
 	public void addEdge(String origen, String destino, float dist) {
@@ -212,8 +195,8 @@ public class Grafo {
 		addNode(destino);
 		int from = nombre_to_id.get(origen);
 		int to = nombre_to_id.get(destino);
-		if (matrix.get(from, to) > dist) {
-			matrix.set(from, to, dist);
+		if (matr.get(from, to) > dist) {
+			matr.set(from, to, dist);
 			modified = true;
 		}
 	}
@@ -227,17 +210,31 @@ public class Grafo {
 	public float getEdge(String origen, String destino) {
 		addNode(origen);
 		addNode(destino);
-		return matrix.get(nombre_to_id.get(origen), nombre_to_id.get(destino));
+		return matr.get(nombre_to_id.get(origen), nombre_to_id.get(destino));
 	}
 	
 	/**
-	 * Algoritmo de Floyd para rutas más cortas
+	 * Agrega un nodo
+	 * @param valor
+	 */
+	public void addNode(String nombre) {
+		if (!nombre_to_id.containsKey(nombre)) {
+			size++;
+			nombre_to_id.put(nombre, size);
+			id_to_nombre.put(size, nombre);
+			matr.up();
+			addEdge(nombre, nombre, 0);
+			modified = true;
+		}
+	}
+
+	/**
+	 * Algo floyd
 	 * @return matriz de costo y matriz de rutas
 	 */
-	public void Floyd() {
-		cost = matrix.copy();
+	public void algFloyd() {
+		cost = matr.copy();
 		paths = new Matriz(size, true);
-		
 		for (int k=1; k<=size; k++) {
 			for (int i=1; i<=size; i++) {
 				for (int j=1; j<=size; j++) {
@@ -257,43 +254,39 @@ public class Grafo {
 	 * Indica el centro del grafo
 	 * @return nodo
 	 */
-	public String centre() {
+	public String centro() {
 		if (modified) {
-			Floyd();
+			algFloyd();
 		}
-		int id = cost.argmin();
-		String ciudad = id_to_nombre.get(id);
-		if (ciudad == null) {
-			return "No tiene centro";
+		int id = cost.min();
+		String centr = id_to_nombre.get(id);
+		if (centr == null) {
+			return "No se ha encontrado el centro";
 		}
-		return "Centro: " + ciudad;
+		return "Centro: " + centr;
 	}
 	
 	/**
 	 * Indica rutas más cortas
-	 * @param origen
-	 * @param destino
+	 * @param from desde donde
+	 * @param to hacia donde
 	 * @return ruta más corta
 	 */
-	public String shortestPath(String origen, String destino) {
+	public String corto(String origen, String destino) {
 		int from = nombre_to_id.get(origen);
 		int to = nombre_to_id.get(destino);
 		
 		if (modified) {
-			Floyd();
+			algFloyd();
 		}
-		
 		if (cost.get(from, to) == cost.INF) {
-			return "No existe camino entre " + origen + " y " + destino;
+			return "No existe entre " + origen + " y " + destino;
 		}
-		
 		String txt = "Distancia: " + cost.get(from, to).toString() + "\n";
-		
-		return txt + path(from, to, origen + "->") + destino;
-		
-		
-	}
-	
+		return txt + ruta(from, to, origen + "->") + destino;
+	}	
+	private Matriz cost;
+	private Matriz paths;
 	/**
 	 * Reconstruye la ruta más corta
 	 * @param i origen
@@ -301,11 +294,11 @@ public class Grafo {
 	 * @param txt
 	 * @return ruta
 	 */
-	private String path(int i, int j, String txt) {
+	private String ruta(int i, int j, String txt) {
 		if (paths.get(i, j) != 0) {
-			txt = path(i, (int) paths.get(i, j).floatValue(), txt);
+			txt = ruta(i, (int) paths.get(i, j).floatValue(), txt);
 			txt += id_to_nombre.get((int) paths.get(i, j).floatValue()) + "->";
-			txt = path((int) paths.get(i, j).floatValue(), j, txt);
+			txt = ruta((int) paths.get(i, j).floatValue(), j, txt);
 			return txt;
 		}
 		return txt;
@@ -313,23 +306,23 @@ public class Grafo {
 	
 	/**
 	 * Elimina un nodo
-	 * @param ciudad
+	 * @param valor
 	 */
 	public void deleteNode(String nombre) {
 		int id = nombre_to_id.get(nombre);
-		matrix.deleteRowCol(id);
+		matr.deleteRowCol(id);
 		size--;
 	}
 	
 	/**
-	 * Elimina un arco o arista
+	 * Elimina una arista
 	 * @param origen
 	 * @param destino
 	 */
 	public void deleteEdge(String origen, String destino) {
 		int from = nombre_to_id.get(origen);
 		int to = nombre_to_id.get(destino);
-		matrix.set(from, to, matrix.INF);
+		matr.set(from, to, matr.INF);
 	}
 	
 	/**
@@ -340,14 +333,17 @@ public class Grafo {
 		for (int i=1; i<size+1; i++) {
 			txt += id_to_nombre.get(i) + ", ";
 		}
-		return txt.substring(0, txt.length() - 2) + "\n" + matrix.toString();
+		return txt.substring(0, txt.length() - 2) + "\n" + matr.toString();
 	}
 	
+	private int size = 0;
+	private boolean modified = false;
+
 	/**
 	 * Indica la matriz de rutas
 	 * @return matriz
 	 */
-	public Matriz getPaths() {
+	public Matriz getRutas() {
 		return paths;
 	}
 	
