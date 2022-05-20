@@ -117,6 +117,10 @@ class Matriz {
 		return id;
 	}
 	
+
+    final float INF = Float.POSITIVE_INFINITY;
+	final float nINF = Float.NEGATIVE_INFINITY;
+
 	/**
 	 * Genera una copia
 	 * @return copia
@@ -142,8 +146,6 @@ class Matriz {
 		}
 	}
 
-    final float INF = Float.POSITIVE_INFINITY;
-	final float nINF = Float.NEGATIVE_INFINITY;
 }
 /**
  * Ultima modificacion: 19/05/2022
@@ -153,8 +155,8 @@ class Matriz {
  */
 public class Grafo {
 	private Matriz matr;
-	private HashMap<String, Integer> nombre_to_id = new HashMap<>();
-	private HashMap<Integer, String> id_to_nombre = new HashMap<>();
+	private HashMap<String, Integer> valAint = new HashMap<>();
+	private HashMap<Integer, String> intAVal = new HashMap<>();
 
 	/**
 	 * Constructor grafo
@@ -172,8 +174,8 @@ public class Grafo {
 	public void addEdge(String origen, String destino, float dist) {
 		addNode(origen);
 		addNode(destino);
-		int from = nombre_to_id.get(origen);
-		int to = nombre_to_id.get(destino);
+		int from = valAint.get(origen);
+		int to = valAint.get(destino);
 		if (matr.get(from, to) > dist) {
 			matr.set(from, to, dist);
 			modified = true;
@@ -189,7 +191,7 @@ public class Grafo {
 	public float getEdge(String origen, String destino) {
 		addNode(origen);
 		addNode(destino);
-		return matr.get(nombre_to_id.get(origen), nombre_to_id.get(destino));
+		return matr.get(valAint.get(origen), valAint.get(destino));
 	}
 	
 	/**
@@ -197,10 +199,10 @@ public class Grafo {
 	 * @param valor
 	 */
 	public void addNode(String nombre) {
-		if (!nombre_to_id.containsKey(nombre)) {
+		if (!valAint.containsKey(nombre)) {
 			size++;
-			nombre_to_id.put(nombre, size);
-			id_to_nombre.put(size, nombre);
+			valAint.put(nombre, size);
+			intAVal.put(size, nombre);
 			matr.up();
 			addEdge(nombre, nombre, 0);
 			modified = true;
@@ -238,7 +240,7 @@ public class Grafo {
 			algFloyd();
 		}
 		int id = cost.min();
-		String centr = id_to_nombre.get(id);
+		String centr = intAVal.get(id);
 		if (centr == null) {
 			return "No encontrado";
 		}
@@ -252,8 +254,8 @@ public class Grafo {
 	 * @return ruta más corta
 	 */
 	public String corto(String origen, String destino) {
-		int from = nombre_to_id.get(origen);
-		int to = nombre_to_id.get(destino);
+		int from = valAint.get(origen);
+		int to = valAint.get(destino);
 		
 		if (modified) {
 			algFloyd();
@@ -276,7 +278,7 @@ public class Grafo {
 	private String ruta(int i, int j, String txt) {
 		if (paths.get(i, j) != 0) {
 			txt = ruta(i, (int) paths.get(i, j).floatValue(), txt);
-			txt += id_to_nombre.get((int) paths.get(i, j).floatValue()) + "->";
+			txt += intAVal.get((int) paths.get(i, j).floatValue()) + "->";
 			txt = ruta((int) paths.get(i, j).floatValue(), j, txt);
 			return txt;
 		}
@@ -288,51 +290,25 @@ public class Grafo {
 	 * @param valor
 	 */
 	public void deleteNode(String nombre) {
-		int id = nombre_to_id.get(nombre);
+		int id = valAint.get(nombre);
 		matr.deleteRowCol(id);
 		size--;
 	}
-	
+
+	private int size = 0;
+	private boolean modified = false;
+
 	/**
 	 * Elimina una arista
 	 * @param origen
 	 * @param destino
 	 */
 	public void deleteEdge(String origen, String destino) {
-		int from = nombre_to_id.get(origen);
-		int to = nombre_to_id.get(destino);
+		int from = valAint.get(origen);
+		int to = valAint.get(destino);
 		matr.set(from, to, matr.INF);
 	}
 	
-	/**
-	 * Pasa el grafo a string
-	 */
-	public String toString() {
-		String txt = "";
-		for (int i=1; i<size+1; i++) {
-			txt += id_to_nombre.get(i) + ", ";
-		}
-		return txt.substring(0, txt.length() - 2) + "\n" + matr.toString();
-	}
-	
-	private int size = 0;
-	private boolean modified = false;
-
-	/**
-	 * Regresa las rutas
-	 * @return matriz
-	 */
-	public Matriz getRutas() {
-		return paths;
-	}
-	
-	/**
-	 * Regresa los costos
-	 * @return matriz
-	 */
-	public Matriz getCost() {
-		return cost;
-	}
 }
 
 
